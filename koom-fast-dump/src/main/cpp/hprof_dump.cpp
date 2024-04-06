@@ -60,7 +60,7 @@ void HprofDump::Initialize() {
     resume_vm_fnc_ = (void (*)())kwai::linker::DlFcn::dlsym(
         handle, "_ZN3art3Dbg8ResumeVMEv");
     KFINISHV_FNC(resume_vm_fnc_, DlFcn::dlclose, handle)
-  } else if (android_api_ <= __ANDROID_API_S__) {
+  } else if (android_api_ <= __ANDROID_API_T__) {
     // Over size for device compatibility
     ssa_instance_ = std::make_unique<char[]>(64);
     sgc_instance_ = std::make_unique<char[]>(64);
@@ -105,7 +105,7 @@ pid_t HprofDump::SuspendAndFork() {
 
   if (android_api_ < __ANDROID_API_R__) {
     suspend_vm_fnc_();
-  } else if (android_api_ <= __ANDROID_API_S__) {
+  } else if (android_api_ <= __ANDROID_API_T__) {
     void *self = __get_tls()[TLS_SLOT_ART_THREAD_SELF];
     sgc_constructor_fnc_((void *)sgc_instance_.get(), self, kGcCauseHprof,
                          kCollectorTypeHprof);
@@ -129,7 +129,7 @@ bool HprofDump::ResumeAndWait(pid_t pid) {
 
   if (android_api_ < __ANDROID_API_R__) {
     resume_vm_fnc_();
-  } else if (android_api_ <= __ANDROID_API_S__) {
+  } else if (android_api_ <= __ANDROID_API_T__) {
     void *self = __get_tls()[TLS_SLOT_ART_THREAD_SELF];
     exclusive_lock_fnc_(*mutator_lock_ptr_, self);
     ssa_destructor_fnc_((void *)ssa_instance_.get());
