@@ -74,12 +74,16 @@ public class ForkJvmHeapDumper implements HeapDumper {
       int pid = suspendAndFork();
       if (pid == 0) {
         // Child process
+        MonitorLog.i(TAG, "子进程-begin");
         Debug.dumpHprofData(path);
+        MonitorLog.i(TAG, "子进程-end");
         exitProcess();
       } else if (pid > 0) {
+        MonitorLog.i(TAG, "主进程-continue-begin");
         // Parent process
         dumpRes = resumeAndWait(pid);
         MonitorLog.i(TAG, "dump " + dumpRes + ", notify from pid " + pid);
+        MonitorLog.i(TAG, "主进程-continue-end");
       }
     } catch (IOException e) {
       MonitorLog.e(TAG, "dump failed caused by " + e);
